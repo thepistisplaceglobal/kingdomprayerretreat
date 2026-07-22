@@ -18,13 +18,26 @@ export async function isPushSupported(): Promise<boolean> {
 
 export async function getNotificationPermissionState(): Promise<NotificationPermission> {
   if (typeof window === "undefined" || !("Notification" in window)) return "denied";
-  return Notification.permission;
+  try {
+    return Notification.permission;
+  } catch {
+    return "denied";
+  }
 }
 
 export async function getActiveSubscription(): Promise<PushSubscription | null> {
   if (!(await isPushSupported())) return null;
-  const registration = await navigator.serviceWorker.ready;
-  return await registration.pushManager.getSubscription();
+  try {
+    const registration = await Promise.race([
+      navigator.serviceWorker.ready,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000))
+    ]);
+    if (!registration) return null;
+    return await registration.pushManager.getSubscription();
+  } catch (err) {
+    console.warn("Could not get active subscription:", err);
+    return null;
+  }
 }
 
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
@@ -33,40 +46,61 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     const registration = await navigator.serviceWorker.register("/sw.js", {
       scope: "/"
     });
-    console.log("Service Worker registered successfully with scope:", registration.scope);
     return registration;
   } catch (error) {
-    console.error("Service Worker registration failed:", error);
+    console.warn("Service Worker registration notice:", error);
     return null;
   }
 }
 
 export async function subscribeToPush(): Promise<PushSubscription | null> {
   if (!(await isPushSupported())) {
-    throw new Error("Push notifications are not supported by this browser.");
+    throw new Error("Push notifications are not supported in this browser.");
+  }
+
+  // Request permission
+  let permission: NotificationPermission = "denied";
+  try {
+    permission = await Notification.requestPermission();
+  } catch (err) {
+    console.warn("Notification permission request was denied or blocked:", err);
+  }
+
+  if (permission !== "granted") {
+    throw new Error("Notification permission was not granted by your browser settings.");
   }
 
   // Ensure service worker is registered
-  let registration: ServiceWorkerRegistration | null | undefined = await navigator.serviceWorker.getRegistration("/");
+  let registration: ServiceWorkerRegistration | null | undefined = null;
+  try {
+    registration = await navigator.serviceWorker.getRegistration("/");
+  } catch {
+    // Ignore error
+  }
+  
   if (!registration) {
     registration = await registerServiceWorker();
   }
   
   if (!registration) {
-    throw new Error("Could not register Service Worker");
+    throw new Error("Could not register Service Worker for notifications.");
   }
 
   // Force service worker active
-  await navigator.serviceWorker.ready;
-
-  // Request permission
-  const permission = await Notification.requestPermission();
-  if (permission !== "granted") {
-    throw new Error("Notification permission denied");
+  try {
+    await navigator.serviceWorker.ready;
+  } catch {
+    // Ignore timeout
   }
 
   // Get active subscription or create new one
-  let subscription = await registration.pushManager.getSubscription();
+  let subscription: PushSubscription | null = null;
+  try {
+    subscription = await registration.pushManager.getSubscription();
+  } catch {
+    subscription = null;
+  }
+
   if (!subscription) {
     const convertedVapidKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
     subscription = await registration.pushManager.subscribe({

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  Menu, 
   X, 
   ShoppingCart, 
   ShoppingBag, 
@@ -16,7 +15,16 @@ import {
   User, 
   Lock, 
   Mail, 
-  Check 
+  Check,
+  Flame,
+  Radio,
+  Compass,
+  ChevronRight,
+  HeartHandshake,
+  Phone,
+  Users,
+  Sparkles,
+  BookOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -36,7 +44,6 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLive, setIsLive] = useState(false);
   const [liveTitle, setLiveTitle] = useState("");
   const [videoId, setVideoId] = useState<string | null>(null);
@@ -44,6 +51,9 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
   // Cart State initialized to empty for safe server render
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Mobile Bottom Sheet State
+  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
   // Login State initialized to null for safe server render
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -287,12 +297,12 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="uppercase tracking-wider hidden sm:inline">Live Now</span>
+              <span className="uppercase tracking-wider">Live Now</span>
             </Link>
           ) : (
             <Link
               href="/sermons"
-              className="flex items-center gap-1 md:gap-1.5 rounded-full bg-white/5 border border-white/10 px-2 md:px-2.5 py-1 text-[10px] md:text-xs font-semibold text-white/50 hover:text-white/85 hover:bg-white/10 transition-all duration-300"
+              className="hidden md:flex items-center gap-1 md:gap-1.5 rounded-full bg-white/5 border border-white/10 px-2 md:px-2.5 py-1 text-[10px] md:text-xs font-semibold text-white/50 hover:text-white/85 hover:bg-white/10 transition-all duration-300"
               title="Stream offline. Browse latest sermons"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-white/30"></span>
@@ -300,10 +310,10 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
             </Link>
           )}
 
-          {/* Cart Icon with badge */}
+          {/* Cart Icon with badge - Desktop Header (Mobile uses Bottom Nav Cart) */}
           <button
             onClick={() => setIsCartOpen(true)}
-            className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all cursor-pointer relative"
+            className="hidden md:flex p-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/80 hover:text-white transition-all cursor-pointer relative"
             aria-label="Open Cart"
           >
             <ShoppingCart size={16} />
@@ -323,7 +333,7 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
                 title="Click to logout"
               >
                 <User size={12} className="text-[#F21449]" />
-                <span className="hidden sm:inline">Hi, {user.name}</span>
+                <span className="text-xs">Hi, {user.name}</span>
               </button>
             </div>
           ) : (
@@ -332,57 +342,411 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
               className="flex items-center gap-1 rounded-full bg-[#F21449] hover:bg-[#F21449]/90 border border-[#F21449]/20 px-2.5 py-1 text-[10px] md:text-xs font-bold text-white transition-all duration-300 cursor-pointer"
             >
               <LogIn size={12} />
-              <span className="hidden sm:inline">Sign In</span>
+              <span className="text-xs">Sign In</span>
             </button>
           )}
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden p-1.5 text-white/80"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? (
-              <X className="h-4 w-4" />
-            ) : (
-              <Menu className="h-4 w-4" />
-            )}
-          </button>
         </div>
       </motion.header>
 
-      {/* Mobile Menu Drawer */}
+      {/* ────────────────────────────────────────────────────────── */}
+      {/* LUXURY APPLE-STYLE MOBILE BOTTOM NAVIGATION BAR           */}
+      {/* ────────────────────────────────────────────────────────── */}
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-sm md:hidden pointer-events-auto">
+        <div className="relative flex items-center justify-around rounded-full bg-[#0a0713]/85 backdrop-blur-2xl border border-white/15 p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_25px_rgba(242,20,73,0.15)] ring-1 ring-white/5">
+          {/* Subtle glossy top highlight */}
+          <div className="absolute inset-x-4 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/25 to-transparent rounded-full" />
+
+          {/* 1. KPR '26 Tab */}
+          <Link
+            href="/KPR"
+            className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
+          >
+            {(pathname === "/KPR" || pathname === "/") && !isCartOpen && !isMobileSheetOpen && (
+              <motion.div
+                layoutId="mobileTabPill"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F21449]/30 to-[#300460]/40 border border-[#F21449]/40 shadow-[0_0_12px_rgba(242,20,73,0.25)]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <motion.div whileTap={{ scale: 0.85 }} className="relative z-10 flex flex-col items-center">
+              <Flame
+                size={18}
+                className={`transition-colors ${
+                  (pathname === "/KPR" || pathname === "/") && !isCartOpen && !isMobileSheetOpen
+                    ? "text-[#F21449] drop-shadow-[0_0_8px_rgba(242,20,73,0.8)]"
+                    : "text-white/50"
+                }`}
+              />
+              <span
+                className={`text-[10px] font-bold tracking-tight mt-0.5 transition-colors ${
+                  (pathname === "/KPR" || pathname === "/") && !isCartOpen && !isMobileSheetOpen
+                    ? "text-white font-extrabold"
+                    : "text-white/50"
+                }`}
+              >
+                KPR &apos;26
+              </span>
+            </motion.div>
+          </Link>
+
+          {/* 2. Sermons Tab */}
+          <Link
+            href="/sermons"
+            className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
+          >
+            {pathname === "/sermons" && !isCartOpen && !isMobileSheetOpen && (
+              <motion.div
+                layoutId="mobileTabPill"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F21449]/30 to-[#300460]/40 border border-[#F21449]/40 shadow-[0_0_12px_rgba(242,20,73,0.25)]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <motion.div whileTap={{ scale: 0.85 }} className="relative z-10 flex flex-col items-center">
+              <div className="relative">
+                <Radio
+                  size={18}
+                  className={`transition-colors ${
+                    pathname === "/sermons" && !isCartOpen && !isMobileSheetOpen
+                      ? "text-[#F21449] drop-shadow-[0_0_8px_rgba(242,20,73,0.8)]"
+                      : "text-white/50"
+                  }`}
+                />
+                {isLive && (
+                  <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                )}
+              </div>
+              <span
+                className={`text-[10px] font-bold tracking-tight mt-0.5 transition-colors ${
+                  pathname === "/sermons" && !isCartOpen && !isMobileSheetOpen
+                    ? "text-white font-extrabold"
+                    : "text-white/50"
+                }`}
+              >
+                Sermons
+              </span>
+            </motion.div>
+          </Link>
+
+          {/* 3. Store / Merchandise Tab */}
+          <button
+            onClick={() => {
+              setIsMobileSheetOpen(false);
+              setIsCartOpen(false);
+              if (pathname === "/KPR") {
+                const el = document.getElementById("shop");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth" });
+                } else {
+                  window.location.hash = "shop";
+                }
+              } else {
+                window.location.href = "/KPR#shop";
+              }
+            }}
+            className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
+          >
+            <motion.div whileTap={{ scale: 0.85 }} className="relative z-10 flex flex-col items-center">
+              <ShoppingBag
+                size={18}
+                className="text-white/50 hover:text-white transition-colors"
+              />
+              <span className="text-[10px] font-bold tracking-tight mt-0.5 text-white/50">
+                Store
+              </span>
+            </motion.div>
+          </button>
+
+          {/* 4. Cart Tab */}
+          <button
+            onClick={() => {
+              setIsMobileSheetOpen(false);
+              setIsCartOpen(true);
+            }}
+            className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
+          >
+            {isCartOpen && !isMobileSheetOpen && (
+              <motion.div
+                layoutId="mobileTabPill"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F21449]/30 to-[#300460]/40 border border-[#F21449]/40 shadow-[0_0_12px_rgba(242,20,73,0.25)]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <motion.div whileTap={{ scale: 0.85 }} className="relative z-10 flex flex-col items-center">
+              <div className="relative">
+                <ShoppingCart
+                  size={18}
+                  className={`transition-colors ${
+                    isCartOpen && !isMobileSheetOpen ? "text-[#F21449]" : "text-white/50"
+                  }`}
+                />
+                {totalCartItems > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-[#F21449] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center border border-black shadow-md animate-bounce">
+                    {totalCartItems}
+                  </span>
+                )}
+              </div>
+              <span
+                className={`text-[10px] font-bold tracking-tight mt-0.5 transition-colors ${
+                  isCartOpen && !isMobileSheetOpen ? "text-white font-extrabold" : "text-white/50"
+                }`}
+              >
+                Cart
+              </span>
+            </motion.div>
+          </button>
+
+          {/* 5. Menu / Action Sheet Tab */}
+          <button
+            onClick={() => {
+              setIsCartOpen(false);
+              setIsMobileSheetOpen(true);
+            }}
+            className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
+          >
+            {isMobileSheetOpen && (
+              <motion.div
+                layoutId="mobileTabPill"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F21449]/30 to-[#300460]/40 border border-[#F21449]/40 shadow-[0_0_12px_rgba(242,20,73,0.25)]"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <motion.div whileTap={{ scale: 0.85 }} className="relative z-10 flex flex-col items-center">
+              <Compass
+                size={18}
+                className={`transition-colors ${
+                  isMobileSheetOpen ? "text-[#F21449]" : "text-white/50"
+                }`}
+              />
+              <span
+                className={`text-[10px] font-bold tracking-tight mt-0.5 transition-colors ${
+                  isMobileSheetOpen ? "text-white font-extrabold" : "text-white/50"
+                }`}
+              >
+                Menu
+              </span>
+            </motion.div>
+          </button>
+        </div>
+      </div>
+
+      {/* ────────────────────────────────────────────────────────── */}
+      {/* APPLE-STYLE MOBILE ACTION SHEET (MENU)                     */}
+      {/* ────────────────────────────────────────────────────────── */}
       <AnimatePresence>
-        {isMenuOpen && (
-          <>
+        {isMobileSheetOpen && (
+          <div className="fixed inset-0 z-50 flex flex-col justify-end md:hidden">
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 z-[45] backdrop-blur-sm md:hidden"
+              onClick={() => setIsMobileSheetOpen(false)}
+              className="absolute inset-0 bg-black/75 backdrop-blur-md"
             />
+
+            {/* Bottom Sheet */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -20 }}
-              className="fixed left-1/2 top-20 z-[46] w-[90%] -translate-x-1/2 rounded-[1.5rem] border border-white/10 bg-[#06040B]/80 p-6 shadow-2xl backdrop-blur-2xl md:hidden"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="relative z-10 w-full bg-[#0c0818]/95 backdrop-blur-3xl border-t border-white/15 rounded-t-[32px] p-6 text-white shadow-[0_-20px_60px_rgba(0,0,0,0.9)] max-h-[85vh] overflow-y-auto"
             >
-              <nav className="flex flex-col gap-4">
-                {navItems.map((item) => (
+              {/* Apple Drag Bar */}
+              <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-5" />
+
+              {/* Sheet Header */}
+              <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#F21449] to-[#300460] p-0.5 shadow-lg flex items-center justify-center">
+                    <Image
+                      src="/KPR_logo.png"
+                      alt="The Pistis Place Logo"
+                      width={36}
+                      height={36}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-base bricolage text-white leading-tight">
+                      The Pistis Place
+                    </h3>
+                    <p className="text-[11px] text-white/50 font-medium">
+                      Birthing convictions in the hearts of men
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsMobileSheetOpen(false)}
+                  className="p-2 rounded-full bg-white/5 border border-white/10 text-white/60 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Grouped iOS Menu Sections */}
+              <div className="space-y-4">
+                {/* Main Navigation Group */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-2 space-y-1">
                   <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-base font-bold transition-colors uppercase tracking-wider ${
-                      pathname === item.href ? "text-[#F21449]" : "text-white/60 hover:text-white"
-                    }`}
+                    href="/KPR"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
                   >
-                    {item.label}
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#F21449]/20 flex items-center justify-center text-[#F21449]">
+                        <Flame size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">KPR 2026 Retreat</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                   </Link>
-                ))}
-              </nav>
+
+                  <Link
+                    href="/sermons"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400">
+                        <Radio size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">Sermons & Media</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+
+                  <Link
+                    href="/KPR#shop"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400">
+                        <ShoppingBag size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">Commemorative Store</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+                </div>
+
+                {/* Ministry & Sanctuary Group */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-2 space-y-1">
+                  <Link
+                    href="/about"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400">
+                        <Sparkles size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">About Ministry</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+
+                  <Link
+                    href="/partner"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <HeartHandshake size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">Partner & Giving</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <Phone size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">Contact & Sanctuary</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+
+                  <Link
+                    href="/counselling"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center text-pink-400">
+                        <BookOpen size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">Spiritual Counselling</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+
+                  <Link
+                    href="/marriage-counselling"
+                    onClick={() => setIsMobileSheetOpen(false)}
+                    className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-rose-500/20 flex items-center justify-center text-rose-400">
+                        <Users size={18} />
+                      </div>
+                      <span className="font-bold text-sm text-white">Marriage Counselling</span>
+                    </div>
+                    <ChevronRight size={16} className="text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                  </Link>
+                </div>
+
+                {/* Account & Profile Footer */}
+                <div className="pt-2">
+                  {user ? (
+                    <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#F21449]/20 border border-[#F21449]/40 flex items-center justify-center text-[#F21449]">
+                          <User size={20} />
+                        </div>
+                        <div>
+                          <p className="font-extrabold text-sm text-white">{user.name}</p>
+                          <p className="text-xs text-white/40">{user.email}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMobileSheetOpen(false);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-bold hover:bg-red-500/25 transition-colors cursor-pointer"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setIsMobileSheetOpen(false);
+                        setIsLoginOpen(true);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F21449] to-[#300460] py-3.5 text-sm font-extrabold text-white shadow-lg cursor-pointer"
+                    >
+                      <LogIn size={16} />
+                      Sign In / Worshipper Portal
+                    </button>
+                  )}
+                </div>
+              </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
 

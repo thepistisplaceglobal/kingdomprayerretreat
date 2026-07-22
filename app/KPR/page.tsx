@@ -169,10 +169,10 @@ const PRODUCTS = [
     name: "Thou Art My Battle Axe Hoodie",
     category: "Apparel",
     description: "An elegant, heavyweight commemorative hoodie designed for the 2026 Kingdom Prayer Retreat, featuring premium embroidery of this year's theme.",
-    image: "/kpr11.jpg",
-    price: 25000,
+    image: "/tees/hoodie.jpeg",
+    price: 20000,
     badge: "Best Seller",
-    colors: ["Midnight Black", "Royal Purple"],
+    colors: ["Midnight Black", "Royal Purple", "Navy Blue", "Olive Green", "Heather Grey", "White"],
     sizes: ["S", "M", "L", "XL", "XXL"]
   },
   {
@@ -180,10 +180,10 @@ const PRODUCTS = [
     name: "KPR 2026 Commemorative T-Shirt",
     category: "Apparel",
     description: "High-quality, lightweight cotton tee styled with the official 'Thou Art My Battle Axe' artwork and ministerial theme.",
-    image: "/kpr12.jpg",
-    price: 15000,
+    image: "/tees/folded_tees.jpeg",
+    price: 7000,
     badge: "Popular",
-    colors: ["Midnight Black", "Royal Purple"],
+    colors: ["Midnight Black", "Royal Purple", "Navy Blue", "Olive Green", "Burgundy", "White"],
     sizes: ["S", "M", "L", "XL", "XXL"]
   },
   {
@@ -194,7 +194,7 @@ const PRODUCTS = [
     image: "/kpr13.jpg",
     price: 8500,
     badge: "Essential",
-    colors: ["Classic Purple", "Royal Purple"],
+    colors: ["Classic Purple", "Royal Purple", "Midnight Black"],
     sizes: ["A5 Hardcover"]
   }
 ];
@@ -217,7 +217,6 @@ export default function KPRPage() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isHoveredStack, setIsHoveredStack] = useState(false);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
 
   interface KPRSpeaker {
     name: string;
@@ -459,7 +458,7 @@ export default function KPRPage() {
       const permission = await getNotificationPermissionState();
       setNotificationPermission(permission);
     } catch (err: unknown) {
-      console.error(err);
+      console.info("Push notification notice:", err);
       const errorObj = err as Error;
       setPushStatusMessage(errorObj.message || "Could not enable push updates.");
     } finally {
@@ -606,12 +605,6 @@ export default function KPRPage() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowToast(true);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -981,7 +974,7 @@ export default function KPRPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar logoHref="https://thepistisplaceglobal.org" />
+      <Navbar logoHref="/" />
 
       {/* ── HERO ── */}
       <section className="relative min-h-[50vh] md:min-h-[80vh] flex flex-col justify-end overflow-hidden pt-[10vh] md:pt-[30vh]">
@@ -1996,7 +1989,7 @@ export default function KPRPage() {
                     {/* Color selector */}
                     <div className="mb-4">
                       <p className="text-white/40 text-[10px] font-bold uppercase tracking-wider mb-2">Color</p>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {product.colors.map((c) => (
                           <button
                             key={c}
@@ -2603,62 +2596,7 @@ export default function KPRPage() {
 
 
 
-      {/* ── EARLY REGISTRATION TOAST NOTIFICATION ── */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="fixed bottom-6 right-6 z-50 max-w-sm w-[calc(100vw-3rem)] bg-[#0B0813] border border-[#F21449]/30 rounded-2xl shadow-2xl p-4 sm:p-5 text-white backdrop-blur-md overflow-hidden"
-          >
-            {/* Ambient fire gradient inside toast */}
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[#F21449]/10 rounded-full blur-[40px] pointer-events-none" />
-            
-            <div className="flex gap-4.5 items-start relative z-10">
-              <div className="bg-[#F21449]/15 border border-[#F21449]/30 p-2.5 rounded-xl text-[#F21449] shrink-0 animate-pulse">
-                <Flame className="w-5 h-5" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="font-extrabold text-sm text-white tracking-tight flex items-center gap-1">
-                    Seats Filling Up Rapidly! 🔥
-                  </h4>
-                  <button
-                    onClick={() => setShowToast(false)}
-                    className="text-white/40 hover:text-white hover:bg-white/5 p-1 rounded-lg transition-colors cursor-pointer"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                <p className="text-white/70 text-xs mt-1.5 leading-relaxed">
-                  Join thousands globally for <strong>Kingdom Prayer Retreat 2026</strong>. Register now to secure your physical seats & accommodation in Uyo.
-                </p>
-                <div className="flex items-center gap-3 mt-3.5">
-                  <button
-                    onClick={() => {
-                      setShowToast(false);
-                      setIsRegisterModalOpen(true);
-                      setCurrentStep(1);
-                    }}
-                    className="bg-[#F21449] hover:bg-[#d60e3f] text-white text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-lg shadow-[#F21449]/20 transition-all cursor-pointer flex items-center gap-1"
-                  >
-                    Register Now
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => setShowToast(false)}
-                    className="text-white/50 hover:text-white text-[11px] font-semibold cursor-pointer"
-                  >
-                    Maybe Later
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
 
       {/* ── KPR REGISTRATION MODAL DIALOG (MULTI-STEP) ── */}
       <AnimatePresence>

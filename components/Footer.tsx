@@ -46,7 +46,7 @@ export default function Footer() {
             variants={fadeInUp}
             className="md:col-span-5 lg:col-span-4 flex flex-col"
           >
-            <div className="w-32 mb-6">
+            <Link href="/" className="w-32 mb-6 block cursor-pointer">
               <Image
                 src="/KPR_logo.png"
                 width={300}
@@ -55,7 +55,7 @@ export default function Footer() {
                 className="w-full h-auto"
                 priority
               />
-            </div>
+            </Link>
             <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-xs">
               Birthing convictions in the hearts of men. A global family of believers pursuing God&apos;s presence and purpose.
             </p>
