@@ -120,7 +120,7 @@ export default function Footer() {
             <FooterLinkColumn
               title="GATHERINGS"
               links={[
-                { label: "Kingdom Prayer Retreat", href: "/KPR" },
+                { label: "Kingdom Prayer Retreat", href: "/" },
                 { label: "Virtual Church", href: "/sermons" },
               ]}
               variants={fadeInUp}

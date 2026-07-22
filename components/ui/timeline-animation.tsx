@@ -2,7 +2,9 @@ import { type HTMLMotionProps, motion, useInView } from "framer-motion";
 import type React from "react";
 import type { Variants } from "framer-motion";
 
-type TimelineContentProps<T extends keyof HTMLElementTagNameMap> = {
+type SupportedElements = "div" | "section" | "article" | "p" | "span" | "li" | "ul" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+
+type TimelineContentProps<T extends SupportedElements> = {
   children?: React.ReactNode;
   animationNum: number;
   className?: string;
@@ -12,7 +14,7 @@ type TimelineContentProps<T extends keyof HTMLElementTagNameMap> = {
   once?: boolean;
 } & HTMLMotionProps<T>;
 
-export const TimelineContent = <T extends keyof HTMLElementTagNameMap = "div">({
+export const TimelineContent = <T extends SupportedElements = "div">({
   children,
   animationNum,
   timelineRef,

@@ -89,8 +89,8 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
   const navItems = [
     { label: "About", href: "/about" },
     { label: "Sermons", href: "/sermons" },
-    { label: "KPR 2026", href: "/KPR" },
-    { label: "Shop", href: "/KPR#shop" },
+    { label: "KPR 2026", href: "/" },
+    { label: "Shop", href: "/#shop" },
   ];
 
   // Fetch YouTube live status
@@ -358,10 +358,10 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
 
           {/* 1. KPR '26 Tab */}
           <Link
-            href="/KPR"
+            href="/"
             className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
           >
-            {(pathname === "/KPR" || pathname === "/") && !isCartOpen && !isMobileSheetOpen && (
+            {(pathname === "/" || pathname === "/KPR") && !isCartOpen && !isMobileSheetOpen && (
               <motion.div
                 layoutId="mobileTabPill"
                 className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F21449]/30 to-[#300460]/40 border border-[#F21449]/40 shadow-[0_0_12px_rgba(242,20,73,0.25)]"
@@ -372,14 +372,14 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
               <Flame
                 size={18}
                 className={`transition-colors ${
-                  (pathname === "/KPR" || pathname === "/") && !isCartOpen && !isMobileSheetOpen
+                  (pathname === "/" || pathname === "/KPR") && !isCartOpen && !isMobileSheetOpen
                     ? "text-[#F21449] drop-shadow-[0_0_8px_rgba(242,20,73,0.8)]"
                     : "text-white/50"
                 }`}
               />
               <span
                 className={`text-[10px] font-bold tracking-tight mt-0.5 transition-colors ${
-                  (pathname === "/KPR" || pathname === "/") && !isCartOpen && !isMobileSheetOpen
+                  (pathname === "/" || pathname === "/KPR") && !isCartOpen && !isMobileSheetOpen
                     ? "text-white font-extrabold"
                     : "text-white/50"
                 }`}
@@ -435,7 +435,7 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
             onClick={() => {
               setIsMobileSheetOpen(false);
               setIsCartOpen(false);
-              if (pathname === "/KPR") {
+              if (pathname === "/" || pathname === "/KPR") {
                 const el = document.getElementById("shop");
                 if (el) {
                   el.scrollIntoView({ behavior: "smooth" });
@@ -443,7 +443,7 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
                   window.location.hash = "shop";
                 }
               } else {
-                window.location.href = "/KPR#shop";
+                window.location.href = "/#shop";
               }
             }}
             className="relative flex flex-1 flex-col items-center justify-center py-1.5 text-center transition-all cursor-pointer"
@@ -593,7 +593,7 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
                 {/* Main Navigation Group */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-2 space-y-1">
                   <Link
-                    href="/KPR"
+                    href="/"
                     onClick={() => setIsMobileSheetOpen(false)}
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
                   >
@@ -621,7 +621,7 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
                   </Link>
 
                   <Link
-                    href="/KPR#shop"
+                    href="/#shop"
                     onClick={() => setIsMobileSheetOpen(false)}
                     className="flex items-center justify-between p-3 rounded-xl hover:bg-white/10 transition-colors group"
                   >
