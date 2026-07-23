@@ -12,28 +12,28 @@ export function Hero() {
   // Simulated live stream check (replace with actual API call or logic)
   // Live stream check
   useEffect(() => {
+    let isMounted = true;
     const checkLiveStatus = async () => {
-      // 1. Check environment variable override first
-      const envOverride = process.env.NEXT_PUBLIC_IS_LIVE;
-      if (envOverride !== undefined) {
-        setIsLive(envOverride === "true");
-        return;
+      try {
+        if (typeof window === "undefined") return;
+        const urlParams = new URLSearchParams(window.location.search);
+        const forceLive = urlParams.get("forceLive") === "true";
+        const response = await fetch(`/api/youtube/live${forceLive ? "?forceLive=true" : ""}`);
+        if (response.ok && isMounted) {
+          const data = await response.json();
+          setIsLive(data.isLive);
+        }
+      } catch {
+        if (isMounted) setIsLive(false);
       }
-
-      // 2. Default logic: Live on Sundays between 10 AM - 12 PM
-      const now = new Date();
-      const day = now.getDay(); // 0 is Sunday
-      const hours = now.getHours();
-
-      const isSunday = day === 0;
-      const isLiveTime = hours >= 10 && hours <= 12;
-
-      setIsLive(isSunday && isLiveTime);
     };
 
     checkLiveStatus();
-    const interval = setInterval(checkLiveStatus, 60000); // Check every minute
-    return () => clearInterval(interval);
+    const interval = setInterval(checkLiveStatus, 45000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   return (

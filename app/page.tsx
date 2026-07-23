@@ -193,11 +193,11 @@ const PRODUCTS = [
     category: "Keep-Sakes",
     description: "Official Bible Study Journals and Spiritual Growth Journals designed to capture divine study notes, prayer revelations, and ministerial insights.",
     image: "/tees/books.jpeg",
-    price: 10000,
-    priceDisplay: "From ₦10,000 - ₦20,000",
+    price: 11000,
+    priceDisplay: "From ₦11,000 - ₦20,000",
     badge: "Essential",
     colors: ["Bible Study Journal", "Spiritual Growth Journal"],
-    sizes: ["Standard Edition (₦10,000)", "Deluxe Edition (₦20,000)"]
+    sizes: ["Bible Study Journal (₦11,000)", "Spiritual Growth Journal (₦20,000)"]
   }
 ];
 
@@ -529,7 +529,7 @@ export default function KPRPage() {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({
     "prod-1": "M",
     "prod-2": "L",
-    "prod-3": "Standard Edition (₦10,000)",
+    "prod-3": "Bible Study Journal (₦11,000)",
   });
   const [selectedColors, setSelectedColors] = useState<Record<string, string>>({
     "prod-1": "Midnight Black",
@@ -544,10 +544,10 @@ export default function KPRPage() {
     // Calculate price for journal options dynamically
     let unitPrice = product.price;
     if (product.id === "prod-3") {
-      if (size.includes("20,000")) {
+      if (size.includes("20,000") || color.includes("Spiritual")) {
         unitPrice = 20000;
-      } else if (size.includes("10,000")) {
-        unitPrice = 10000;
+      } else {
+        unitPrice = 11000;
       }
     }
 
@@ -1289,11 +1289,11 @@ export default function KPRPage() {
           <div className="w-[30%] h-full bg-gradient-to-r from-[#F21449]/10 to-[#300460]/10 blur-2xl" />
         </div>
         <div className="flex items-center justify-center gap-3 relative z-10 px-4">
-          <Radio className="w-4 h-4 text-[#F21449] animate-pulse flex-shrink-0" />
+          <Radio className="w-4 h-4 text-[#F21449] flex-shrink-0" />
           <p className="text-white/80 text-xs sm:text-sm font-medium tracking-[0.15em] text-center uppercase">
             Streaming live on all platforms &nbsp;<span className="text-[#F21449]">·</span>&nbsp; @thepistisplaceglobal &nbsp;<span className="text-[#F21449]">·</span>&nbsp; @kingdomprayerretreat
           </p>
-          <Radio className="w-4 h-4 text-[#F21449] animate-pulse flex-shrink-0" />
+          <Radio className="w-4 h-4 text-[#F21449] flex-shrink-0" />
         </div>
       </div>
 
@@ -2031,7 +2031,15 @@ export default function KPRPage() {
                         {product.colors.map((c) => (
                           <button
                             key={c}
-                            onClick={() => setSelectedColors(prev => ({ ...prev, [product.id]: c }))}
+                            onClick={() => {
+                              setSelectedColors(prev => ({ ...prev, [product.id]: c }));
+                              if (product.id === "prod-3") {
+                                const matchingSize = c.includes("Spiritual")
+                                  ? "Spiritual Growth Journal (₦20,000)"
+                                  : "Bible Study Journal (₦11,000)";
+                                setSelectedSizes(prev => ({ ...prev, [product.id]: matchingSize }));
+                              }
+                            }}
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                               selectedColors[product.id] === c
                                 ? "bg-white text-black border-white"
@@ -2053,7 +2061,15 @@ export default function KPRPage() {
                         {product.sizes.map((s) => (
                           <button
                             key={s}
-                            onClick={() => setSelectedSizes(prev => ({ ...prev, [product.id]: s }))}
+                            onClick={() => {
+                              setSelectedSizes(prev => ({ ...prev, [product.id]: s }));
+                              if (product.id === "prod-3") {
+                                const matchingColor = s.includes("Spiritual")
+                                  ? "Spiritual Growth Journal"
+                                  : "Bible Study Journal";
+                                setSelectedColors(prev => ({ ...prev, [product.id]: matchingColor }));
+                              }
+                            }}
                             className={`min-w-[32px] h-8 px-3 rounded-lg text-xs font-extrabold border flex items-center justify-center transition-all ${
                               selectedSizes[product.id] === s
                                 ? "bg-[#F21449] text-white border-[#F21449] shadow-lg shadow-[#F21449]/20"
@@ -2069,15 +2085,22 @@ export default function KPRPage() {
                     {/* Price and Add to Cart */}
                     <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-auto">
                       <div>
-                        <p className="text-white/40 text-[9px] uppercase tracking-wider">Price</p>
+                        <p className="text-white/40 text-[9px] uppercase tracking-wider">Selected Price</p>
                         <p className="text-xl md:text-2xl font-black text-white">
-                          {product.priceDisplay ? product.priceDisplay : `₦${product.price.toLocaleString()}`}
+                          ₦{(
+                            product.id === "prod-3"
+                              ? (selectedSizes[product.id]?.includes("20,000") || selectedColors[product.id]?.includes("Spiritual") ? 20000 : 11000)
+                              : product.price
+                          ).toLocaleString()}
                         </p>
+                        {product.priceDisplay && (
+                          <p className="text-[10px] text-white/50 font-semibold">{product.priceDisplay}</p>
+                        )}
                       </div>
 
                       <button
                         onClick={() => addToCart(product)}
-                        className="flex items-center gap-2 bg-[#F21449] hover:bg-[#F21449]/90 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg shadow-[#F21449]/20 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
+                        className="flex items-center gap-2 bg-[#F21449] hover:bg-[#F21449]/90 text-white px-5 py-3 rounded-xl font-bold text-sm shadow-lg shadow-[#F21449]/20 transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                       >
                         <ShoppingBag size={16} />
                         Add to Cart

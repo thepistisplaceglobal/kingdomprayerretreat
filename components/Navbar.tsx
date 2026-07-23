@@ -205,16 +205,18 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
 
   const handleWhatsAppCheckout = () => {
     const orderDetails = cart
-      .map(
-        (item) =>
-          `• *${item.name}* [Size: ${item.size}, Color: ${item.color}] x${item.quantity} - ₦${(
-            item.price * item.quantity
-          ).toLocaleString()}`
-      )
+      .map((item) => {
+        const itemOption = item.size === item.color || item.size.includes(item.color)
+          ? item.size
+          : `Size: ${item.size}, Color: ${item.color}`;
+        return `• *${item.name}* [${itemOption}] x${item.quantity} - ₦${(
+          item.price * item.quantity
+        ).toLocaleString()}`;
+      })
       .join("\n");
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const text = `Hello, I'd like to place an order for KPR 2026 merchandise:\n\n${orderDetails}\n\n*Total Amount:* ₦${total.toLocaleString()}\n\nPlease verify and provide me with payment details and pick-up arrangements. Thank you!`;
-    window.open(`https://wa.me/2348163559545?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/2349018105369?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   const handleLoginSubmit = (e: React.FormEvent) => {
@@ -813,7 +815,9 @@ export default function Navbar({ logoHref = "/" }: { logoHref?: string }) {
                         <div className="flex-grow">
                           <h3 className="font-bold text-sm text-white line-clamp-1">{item.name}</h3>
                           <p className="text-[10px] text-white/40 mt-0.5">
-                            Size: {item.size} &nbsp;·&nbsp; Color: {item.color}
+                            {item.size === item.color || item.size.includes(item.color)
+                              ? item.size
+                              : `Size: ${item.size} · Color: ${item.color}`}
                           </p>
                           <p className="font-black text-sm text-white mt-1.5">
                             ₦{item.price.toLocaleString()}

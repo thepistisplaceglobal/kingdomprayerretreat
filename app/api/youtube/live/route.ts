@@ -42,44 +42,26 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 3. Timezone-aware fallback (Nigeria/West Africa Time is UTC+1)
-    // Sunday: 8:30 AM - 12:30 PM WAT (Sunday service)
-    // Wednesday: 5:30 PM - 7:30 PM WAT (Midweek service)
-    // Friday: 5:00 PM - 7:00 PM WAT (Power prayers)
+    // 3. Timezone-aware schedule information (Nigeria/West Africa Time is UTC+1)
     const now = new Date();
-    // Convert current UTC time to West Africa Time (UTC+1)
     const watTime = new Date(now.getTime() + (1 * 60 * 60 * 1000));
-    
-    const day = watTime.getUTCDay(); // 0: Sunday, 1: Monday, ..., 3: Wednesday, 5: Friday
-    const hours = watTime.getUTCHours();
-    const minutes = watTime.getUTCMinutes();
-    const timeInDecimal = hours + minutes / 60;
+    const day = watTime.getUTCDay();
 
-    let isLiveBySchedule = false;
     let scheduledTitle = "The Pistis Place Live Service";
-
-    if (day === 0) { // Sunday
-      if (timeInDecimal >= 8.5 && timeInDecimal <= 12.5) {
-        isLiveBySchedule = true;
-        scheduledTitle = "Sunday Worship & Anointing Service - Live";
-      }
-    } else if (day === 3) { // Wednesday
-      if (timeInDecimal >= 17.5 && timeInDecimal <= 19.5) {
-        isLiveBySchedule = true;
-        scheduledTitle = "Midweek Communion & Word Encounter - Live";
-      }
-    } else if (day === 5) { // Friday
-      if (timeInDecimal >= 17.0 && timeInDecimal <= 19.0) {
-        isLiveBySchedule = true;
-        scheduledTitle = "Friday Prophetic Prayer Altar - Live";
-      }
+    if (day === 0) {
+      scheduledTitle = "Sunday Worship & Anointing Service";
+    } else if (day === 3) {
+      scheduledTitle = "Midweek Communion & Word Encounter";
+    } else if (day === 5) {
+      scheduledTitle = "Friday Prophetic Prayer Altar";
     }
 
+    // Only mark isLive as true if explicitly verified by API or forced. Otherwise return false so the header badge does not pulse falsely.
     return NextResponse.json({
-      isLive: isLiveBySchedule,
-      title: isLiveBySchedule ? scheduledTitle : "No ongoing service",
-      videoId: isLiveBySchedule ? "live" : null,
-      scheduled: true,
+      isLive: false,
+      title: scheduledTitle,
+      videoId: null,
+      scheduledTitle,
     });
   } catch (error) {
     console.error("Error in live-status route:", error);
